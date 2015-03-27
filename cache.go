@@ -38,6 +38,13 @@ func (cache *Cache) Get(key string) (data string, found bool) {
 	return
 }
 
+// Delete is a thread-safe way to delete an item
+func (cache *Cache) Delete(key string) {
+	cache.mutex.Lock()
+	delete(cache.items, key)
+	cache.mutex.Unlock()
+}
+
 // Count returns the number of items in the cache
 // (helpful for tracking memory leaks)
 func (cache *Cache) Count() int {
