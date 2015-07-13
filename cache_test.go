@@ -1,6 +1,7 @@
 package ttlcache
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -27,15 +28,20 @@ func TestGet(t *testing.T) {
 }
 
 func TestExpiration(t *testing.T) {
-	cache := &Cache{
-		ttl:   time.Second,
-		items: map[string]*Item{},
-	}
+	cache := NewCache(time.Second)
 
+	/*
+		cache := &Cache{
+			ttl:   time.Second,
+			items: map[string]*Item{},
+		}
+	*/
 	cache.Set("x", "1")
 	cache.Set("y", "z")
 	cache.Set("z", "3")
-	cache.startCleanupTimer()
+	/*
+		cache.startCleanupTimer()
+	*/
 
 	count := cache.Count()
 	if count != 3 {
@@ -84,4 +90,26 @@ func TestExpiration(t *testing.T) {
 	if count != 0 {
 		t.Errorf("Expected cache to be empty")
 	}
+
+	for i := 0; i < 30; i++ {
+		cache.Set(fmt.Sprintf("a%d", i), "value")
+	}
+
+	time.Sleep(time.Second * 1)
+
+	go func() {
+		for {
+			select {
+			case key := <-cache.FinishedItems:
+				fmt.Printf("timeout item: %s\n", key)
+			}
+		}
+	}()
+
+	for i := 30; i < 60; i++ {
+		cache.Set(fmt.Sprintf("a%d", i), "value")
+		time.Sleep(time.Millisecond * 300)
+	}
+
+	time.Sleep(time.Second * 10)
 }
