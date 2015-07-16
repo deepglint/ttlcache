@@ -92,7 +92,7 @@ func TestExpiration(t *testing.T) {
 	}
 
 	for i := 0; i < 30; i++ {
-		cache.Set(fmt.Sprintf("a%d", i), "value")
+		cache.Set(fmt.Sprintf("key %d", i), fmt.Sprintf("value %d", i))
 	}
 
 	time.Sleep(time.Second * 1)
@@ -107,7 +107,7 @@ func TestExpiration(t *testing.T) {
 	}()
 
 	for i := 30; i < 60; i++ {
-		cache.Set(fmt.Sprintf("a%d", i), "value")
+		cache.Set(fmt.Sprintf("key %d", i), fmt.Sprintf("value %d", i))
 		time.Sleep(time.Millisecond * 300)
 	}
 

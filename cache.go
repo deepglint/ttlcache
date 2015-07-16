@@ -64,7 +64,7 @@ func (cache *Cache) cleanup() {
 			if len(cache.FinishedItems) == cache.Length {
 				<-cache.FinishedItems
 			}
-			cache.FinishedItems <- key
+			cache.FinishedItems <- item.data
 		}
 	}
 	cache.mutex.Unlock()
